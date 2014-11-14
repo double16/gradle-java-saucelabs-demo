@@ -9,3 +9,6 @@ The web stack here is intentionally simple.
 - Gradle
 
 The intent is to show a recipe for integrating Sauce Labs for functional testing across browsers.
+
+Credit to https://github.com/kolorobot/spring-mvc-quickstart-archetype for Spring MVC quick start application.
+
