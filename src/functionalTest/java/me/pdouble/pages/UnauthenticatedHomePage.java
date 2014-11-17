@@ -5,12 +5,16 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 
-public class HomePage extends CommonPage {
+public class UnauthenticatedHomePage extends CommonPage {
   @FindBy(xpath = "//a[contains(text(), 'Sign up')]")
   private WebElement signupButton;
 
-  public HomePage(WebDriver driver) {
+  public UnauthenticatedHomePage(WebDriver driver) {
     super(driver);
+    waitForBody();
+    if (!driver.getTitle().contains("Welcome")) {
+      throw new IllegalStateException("Not the unauthenticated home page");
+    }
   }
 
   public SignupPage clickOnSignup() {

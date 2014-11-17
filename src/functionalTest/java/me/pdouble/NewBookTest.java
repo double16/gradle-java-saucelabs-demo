@@ -1,7 +1,7 @@
 package me.pdouble;
 
 import me.pdouble.pages.BookListPage;
-import me.pdouble.pages.HomePage;
+import me.pdouble.pages.UnauthenticatedHomePage;
 import me.pdouble.pages.NewBookPage;
 import me.pdouble.pages.SignupPage;
 import org.junit.Assert;
@@ -19,9 +19,7 @@ public class NewBookTest extends AbstractFunctionalTest {
 
   @Test
   public void newBookTest() {
-    HomePage homePage = PageFactory.initElements(driver, HomePage.class);
-    SignupPage signupPage = homePage.clickOnSignup();
-    signupPage.signup("me@nowhere.com", "P@55w0rd");
+    newUser();
     driver.get(baseUrl+BookListPage.url);
     report("book-list");
     BookListPage bookListPage = PageFactory.initElements(driver, BookListPage.class);

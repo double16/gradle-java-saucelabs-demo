@@ -1,9 +1,25 @@
+import com.saucelabs.gradle.SauceListener
+
+buildscript {
+    repositories {
+        jcenter()
+        maven {
+            url "https://repository-saucelabs.forge.cloudbees.com/release"
+        }
+    }
+    dependencies {
+        classpath group: 'com.saucelabs.gradle', name: 'sauce-gradle-plugin', version: '0.0.1'
+        classpath 'org.gebish:geb-gradle:0.10.0'
+    }
+}
+
 apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'war'
 apply from: 'gretty.plugin'
 apply plugin: 'idea'
 apply plugin: 'project-report'
+apply plugin: 'geb-saucelabs' // We want to use Sauce Connect
 
 group = 'me.pdouble'
 version = '0.1-SNAPSHOT'
@@ -15,6 +31,9 @@ targetCompatibility = 1.7
 
 repositories {
     jcenter()
+    maven {
+        url "https://repository-saucelabs.forge.cloudbees.com/release"
+    }
 }
 
 sourceSets {
@@ -26,6 +45,8 @@ idea {
         scopes.TEST.plus += [ configurations.functionalTestCompile ]
     }
 }
+
+gradle.addListener(new SauceListener(System.getenv("SAUCE_LABS_USER"), System.getenv("SAUCE_LABS_ACCESS_PASSWORD")))
 
 dependencies {
     compile(group: 'org.springframework', name: 'spring-context', version:'4.0.3.RELEASE') {
@@ -63,17 +84,65 @@ dependencies {
     testCompile group: 'org.objenesis', name: 'objenesis', version:'1.3'
     testCompile group: 'org.springframework', name: 'spring-test', version:'4.0.3.RELEASE'
 
+    sauceConnect "com.saucelabs:ci-sauce:1.81"
+
     functionalTestCompile group: 'junit', name: 'junit', version:'4.11'
     functionalTestCompile 'org.seleniumhq.selenium:selenium-java:2.42.2'
     functionalTestCompile 'com.github.detro.ghostdriver:phantomjsdriver:1.1.0'
+    functionalTestCompile group: 'com.saucelabs', name: 'sauce_java_common', version: '2.1.10'
 
     providedCompile group: 'org.apache.geronimo.specs', name: 'geronimo-servlet_3.0_spec', version:'1.0'
 }
 
-task functionalTest(type: Test) {
+sauceLabs {
+    account {
+        username = System.getenv("SAUCE_LABS_USER")
+        accessKey = System.getenv("SAUCE_LABS_ACCESS_PASSWORD")
+    }
+    connect {
+        port = 4445
+    }
+}
+
+def browsers = [
+    [ browserName: 'chrome',            platform: 'Windows 7',   version:  '36' ],
+    [ browserName: 'firefox',           platform: 'Windows 7',   version:  '31' ],
+    [ browserName: 'firefox',           platform: 'mac',  version:  '33' ],
+    [ browserName: 'internet explorer', platform: 'Windows 7',   version:   '8' ],
+    [ browserName: 'internet explorer', platform: 'Windows 7',   version:   '9' ],
+    [ browserName: 'internet explorer', platform: 'Windows 7',   version:  '10' ],
+    [ browserName: 'internet explorer', platform: '', version:  '11' ],
+    [ browserName: 'iPhone',            platform: 'mac',   version: '7.1', 'device-orientation': 'portrait']
+]
+
+def functionalTestTasks = []
+
+task phantomJsTest(type: Test) {
     testClassesDir = sourceSets.functionalTest.output.classesDir
     classpath = sourceSets.functionalTest.runtimeClasspath
     systemProperty 'testReportDir', testReportDir
 }
-functionalTest.dependsOn 'appBeforeIntegrationTest'
-functionalTest.finalizedBy 'appAfterIntegrationTest'
+phantomJsTest.dependsOn 'appBeforeIntegrationTest', 'openSauceTunnelInBackground'
+phantomJsTest.finalizedBy 'appAfterIntegrationTest', 'closeSauceTunnel'
+functionalTestTasks << phantomJsTest
+
+browsers.each { browserSpec ->
+    def name = browserSpec.collect { key, value -> value }.join('_').replaceAll(/\s+/, '')
+
+    task "${name}Test"(type: Test) {
+        outputs.upToDateWhen { false }
+        testClassesDir = sourceSets.functionalTest.output.classesDir
+        classpath = sourceSets.functionalTest.runtimeClasspath
+        dependsOn 'appBeforeIntegrationTest', 'openSauceTunnelInBackground'
+        finalizedBy 'appAfterIntegrationTest', 'closeSauceTunnel'
+        systemProperty 'testReportDir', testReportDir
+        systemProperty 'saucelabs.job-name', project.name
+        systemProperty 'saucelabs.build', project.version
+        systemProperty 'saucelabs.browser', browserSpec.collect { key, value -> "${key}=${value}" }.join(',')
+    }
+    functionalTestTasks << "${name}Test"
+}
+
+task functionalTest(dependsOn: functionalTestTasks, type: Test) {
+
+}
