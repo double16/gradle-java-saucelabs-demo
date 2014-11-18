@@ -127,15 +127,15 @@ task phantomJsTest(type: Test) {
     //reports.junitXml.destination = file(phantomJsReportDir)
     //reports.html.destination = file(phantomJsReportDir)
     systemProperty 'proj.test.resultsDir', phantomJsReportDir
-    dependsOn 'appBeforeIntegrationTest', 'openSauceTunnelInBackground'
-    finalizedBy 'appAfterIntegrationTest', 'closeSauceTunnel'
+    dependsOn 'appBeforeIntegrationTest'
+    finalizedBy 'appAfterIntegrationTest'
 }
 functionalTestTasks << phantomJsTest
 
 browsers.each { browserSpec ->
     def name = browserSpec.collect { key, value -> value }.join('_').replaceAll(/\s+/, '')
     def thisReportDir = "${testReportDir}/${name}"
-    task "${name}Test"(type: Test) {
+    project.tasks.create(name: "${name}Test", type: Test) {
         inputs.file("src")
         outputs.file(thisReportDir)
         testClassesDir = sourceSets.functionalTest.output.classesDir

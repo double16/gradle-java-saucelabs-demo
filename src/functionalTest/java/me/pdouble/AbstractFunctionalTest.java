@@ -103,18 +103,7 @@ public abstract class AbstractFunctionalTest {
 
   @Before
   public void setUp() throws Exception {
-    String testPlatform = driver.getClass().getSimpleName();
-    if (driver instanceof RemoteWebDriver) {
-      Map<String, Object> caps = new HashMap<String, Object>(((RemoteWebDriver) driver).getCapabilities().asMap());
-      StringBuffer sb = new StringBuffer(128);
-      sb.append(caps.remove(CapabilityType.BROWSER_NAME));
-      sb.append('_');
-      sb.append(caps.remove(CapabilityType.PLATFORM));
-      sb.append('_');
-      sb.append(caps.remove(CapabilityType.VERSION));
-      testPlatform = sb.toString();
-    }
-    reportDir = new File(new File(System.getProperty("proj.test.resultsDir", "build/report/tests")), testPlatform+"/"+testName.getMethodName());
+    reportDir = new File(new File(System.getProperty("proj.test.resultsDir", "build/reports/tests")), testName.getMethodName());
     reportDir.mkdirs();
 
     baseUrl = "http://localhost:8080/gradle-java-saucelabs-demo/"; // FIXME: set this from build
