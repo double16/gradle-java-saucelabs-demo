@@ -7,25 +7,23 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TestName;
-import org.openqa.selenium.*;
 import org.junit.runners.Parameterized.Parameters;
-import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.*;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import com.saucelabs.common.SauceOnDemandAuthentication;
-import com.saucelabs.common.SauceOnDemandSessionIdProvider;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.StringReader;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class AbstractFunctionalTest {
   protected ThreadLocal<NumberFormat> REPORT_OUTPUT_FORMAT = new ThreadLocal<NumberFormat>() {
@@ -40,8 +38,6 @@ public abstract class AbstractFunctionalTest {
   protected String baseUrl;
   protected File reportDir;
   protected int reportOutputNum = 1;
-
-  //protected SauceOnDemandAuthentication authentication = new SauceOnDemandAuthentication();
 
   @Rule
   public TestName testName = new TestName();
@@ -117,12 +113,8 @@ public abstract class AbstractFunctionalTest {
       sb.append('_');
       sb.append(caps.remove(CapabilityType.VERSION));
       testPlatform = sb.toString();
-      /*
-      capabilities.setCapability("name", "xxTest :" + testName.getMethodName());
-
-       */
     }
-    reportDir = new File(new File(System.getProperty("testReportDir", "build/report/tests")), testPlatform+"/"+testName.getMethodName());
+    reportDir = new File(new File(System.getProperty("proj.test.resultsDir", "build/report/tests")), testPlatform+"/"+testName.getMethodName());
     reportDir.mkdirs();
 
     baseUrl = "http://localhost:8080/gradle-java-saucelabs-demo/"; // FIXME: set this from build

@@ -111,31 +111,41 @@ def browsers = [
     [ browserName: 'internet explorer', platform: 'Windows 7',   version:   '8' ],
     [ browserName: 'internet explorer', platform: 'Windows 7',   version:   '9' ],
     [ browserName: 'internet explorer', platform: 'Windows 7',   version:  '10' ],
-    [ browserName: 'internet explorer', platform: '', version:  '11' ],
+    [ browserName: 'internet explorer', platform: 'Windows 7', version:  '11' ],
     [ browserName: 'iPhone',            platform: 'mac',   version: '7.1', 'device-orientation': 'portrait']
 ]
 
 def functionalTestTasks = []
 
+def phantomJsReportDir = "${testReportDir}/phantomjs"
 task phantomJsTest(type: Test) {
+    inputs.file("src")
+    outputs.file(phantomJsReportDir)
     testClassesDir = sourceSets.functionalTest.output.classesDir
     classpath = sourceSets.functionalTest.runtimeClasspath
-    systemProperty 'testReportDir', testReportDir
+    binResultsDir = file(phantomJsReportDir)
+    //reports.junitXml.destination = file(phantomJsReportDir)
+    //reports.html.destination = file(phantomJsReportDir)
+    systemProperty 'proj.test.resultsDir', phantomJsReportDir
+    dependsOn 'appBeforeIntegrationTest', 'openSauceTunnelInBackground'
+    finalizedBy 'appAfterIntegrationTest', 'closeSauceTunnel'
 }
-phantomJsTest.dependsOn 'appBeforeIntegrationTest', 'openSauceTunnelInBackground'
-phantomJsTest.finalizedBy 'appAfterIntegrationTest', 'closeSauceTunnel'
 functionalTestTasks << phantomJsTest
 
 browsers.each { browserSpec ->
     def name = browserSpec.collect { key, value -> value }.join('_').replaceAll(/\s+/, '')
-
+    def thisReportDir = "${testReportDir}/${name}"
     task "${name}Test"(type: Test) {
-        outputs.upToDateWhen { false }
+        inputs.file("src")
+        outputs.file(thisReportDir)
         testClassesDir = sourceSets.functionalTest.output.classesDir
         classpath = sourceSets.functionalTest.runtimeClasspath
+        binResultsDir = file(thisReportDir)
+        //reports.junitXml.destination = file(thisReportDir)
+        //reports.html.destination = file(thisReportDir)
         dependsOn 'appBeforeIntegrationTest', 'openSauceTunnelInBackground'
         finalizedBy 'appAfterIntegrationTest', 'closeSauceTunnel'
-        systemProperty 'testReportDir', testReportDir
+        systemProperty 'proj.test.resultsDir', thisReportDir
         systemProperty 'saucelabs.job-name', project.name
         systemProperty 'saucelabs.build', project.version
         systemProperty 'saucelabs.browser', browserSpec.collect { key, value -> "${key}=${value}" }.join(',')
@@ -146,3 +156,5 @@ browsers.each { browserSpec ->
 task functionalTest(dependsOn: functionalTestTasks, type: Test) {
 
 }
+
+defaultTasks 'clean', 'build'
