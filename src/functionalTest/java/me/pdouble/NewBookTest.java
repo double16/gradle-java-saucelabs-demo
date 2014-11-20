@@ -12,7 +12,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.PageFactory;
 
 @RunWith(Parameterized.class)
-public class NewBookTest extends AbstractFunctionalTest {
+public class NewBookTest extends AbstractBookFunctionalTest {
   public NewBookTest(WebDriver driver) {
     super(driver);
   }

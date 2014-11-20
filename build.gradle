@@ -1,25 +1,27 @@
-import com.saucelabs.gradle.SauceListener
 
 buildscript {
     repositories {
+        mavenLocal()
         jcenter()
         maven {
             url "https://repository-saucelabs.forge.cloudbees.com/release"
         }
     }
     dependencies {
-        classpath group: 'com.saucelabs.gradle', name: 'sauce-gradle-plugin', version: '0.0.1'
-        classpath 'org.gebish:geb-gradle:0.10.0'
+        classpath 'org.gebish:geb-gradle:0.10.0' // for the sauceLabs configuration
+        classpath 'com.github.double16:gradle-java-saucelabs-plugin:0.1-SNAPSHOT'
+        classpath 'com.saucelabs.gradle:sauce-gradle-plugin:0.0.1'
+        classpath "org.akhikhl.gretty:gretty:1.1.7" // for the container
     }
 }
 
 apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'war'
-apply from: 'gretty.plugin'
+apply plugin: 'org.akhikhl.gretty'
 apply plugin: 'idea'
 apply plugin: 'project-report'
-apply plugin: 'geb-saucelabs' // We want to use Sauce Connect
+apply plugin: 'com.github.double16.java-saucelabs'
 
 group = 'me.pdouble'
 version = '0.1-SNAPSHOT'
@@ -30,14 +32,8 @@ sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
 repositories {
+    mavenLocal()
     jcenter()
-    maven {
-        url "https://repository-saucelabs.forge.cloudbees.com/release"
-    }
-}
-
-sourceSets {
-    functionalTest
 }
 
 idea {
@@ -46,7 +42,6 @@ idea {
     }
 }
 
-gradle.addListener(new SauceListener(System.getenv("SAUCE_LABS_USER"), System.getenv("SAUCE_LABS_ACCESS_PASSWORD")))
 
 dependencies {
     compile(group: 'org.springframework', name: 'spring-context', version:'4.0.3.RELEASE') {
@@ -84,14 +79,9 @@ dependencies {
     testCompile group: 'org.objenesis', name: 'objenesis', version:'1.3'
     testCompile group: 'org.springframework', name: 'spring-test', version:'4.0.3.RELEASE'
 
-    sauceConnect "com.saucelabs:ci-sauce:1.81"
-
-    functionalTestCompile group: 'junit', name: 'junit', version:'4.11'
-    functionalTestCompile 'org.seleniumhq.selenium:selenium-java:2.42.2'
-    functionalTestCompile 'com.github.detro.ghostdriver:phantomjsdriver:1.1.0'
-    functionalTestCompile group: 'com.saucelabs', name: 'sauce_java_common', version: '2.1.10'
-
     providedCompile group: 'org.apache.geronimo.specs', name: 'geronimo-servlet_3.0_spec', version:'1.0'
+
+    functionalTestCompile 'com.github.double16:gradle-java-saucelabs-plugin:0.1-SNAPSHOT'
 }
 
 sauceLabs {
@@ -104,57 +94,24 @@ sauceLabs {
     }
 }
 
-def browsers = [
-    [ browserName: 'chrome',            platform: 'Windows 7',   version:  '36' ],
-    [ browserName: 'firefox',           platform: 'Windows 7',   version:  '31' ],
-    [ browserName: 'firefox',           platform: 'mac',  version:  '33' ],
-    [ browserName: 'internet explorer', platform: 'Windows 7',   version:   '8' ],
-    [ browserName: 'internet explorer', platform: 'Windows 7',   version:   '9' ],
-    [ browserName: 'internet explorer', platform: 'Windows 7',   version:  '10' ],
-    [ browserName: 'internet explorer', platform: 'Windows 7', version:  '11' ],
-    [ browserName: 'iPhone',            platform: 'mac',   version: '7.1', 'device-orientation': 'portrait']
-]
-
-def functionalTestTasks = []
-
-def phantomJsReportDir = "${testReportDir}/phantomjs"
-task phantomJsTest(type: Test) {
-    inputs.file("src")
-    outputs.file(phantomJsReportDir)
-    testClassesDir = sourceSets.functionalTest.output.classesDir
-    classpath = sourceSets.functionalTest.runtimeClasspath
-    binResultsDir = file(phantomJsReportDir)
-    //reports.junitXml.destination = file(phantomJsReportDir)
-    //reports.html.destination = file(phantomJsReportDir)
-    systemProperty 'proj.test.resultsDir', phantomJsReportDir
-    dependsOn 'appBeforeIntegrationTest'
-    finalizedBy 'appAfterIntegrationTest'
-}
-functionalTestTasks << phantomJsTest
-
-browsers.each { browserSpec ->
-    def name = browserSpec.collect { key, value -> value }.join('_').replaceAll(/\s+/, '')
-    def thisReportDir = "${testReportDir}/${name}"
-    project.tasks.create(name: "${name}Test", type: Test) {
-        inputs.file("src")
-        outputs.file(thisReportDir)
-        testClassesDir = sourceSets.functionalTest.output.classesDir
-        classpath = sourceSets.functionalTest.runtimeClasspath
-        binResultsDir = file(thisReportDir)
-        //reports.junitXml.destination = file(thisReportDir)
-        //reports.html.destination = file(thisReportDir)
-        dependsOn 'appBeforeIntegrationTest', 'openSauceTunnelInBackground'
-        finalizedBy 'appAfterIntegrationTest', 'closeSauceTunnel'
-        systemProperty 'proj.test.resultsDir', thisReportDir
-        systemProperty 'saucelabs.job-name', project.name
-        systemProperty 'saucelabs.build', project.version
-        systemProperty 'saucelabs.browser', browserSpec.collect { key, value -> "${key}=${value}" }.join(',')
+browsers {
+    firefox_linux_31
+    firefox_windows_31
+    chrome_mac
+    chrome_windows_36
+    delegate."internet explorer_Windows 7_11"
+    delegate."internet explorer_Windows 7_10"
+    delegate."internet explorer_vista_9"
+    /*
+    nexus4 {
+        capabilities browserName: "android", platform: "Linux", version: "4.4", deviceName: "LG Nexus 4"
+    }}
+    */
+    /* iOS doesn't work with sauce connect and internal names
+    iphone {
+        capabilities browserName: 'iPhone',            platform: 'OS X 10.9',   version: '7.1', 'device-orientation': 'portrait'
     }
-    functionalTestTasks << "${name}Test"
-}
-
-task functionalTest(dependsOn: functionalTestTasks, type: Test) {
-
+    */
 }
 
 defaultTasks 'clean', 'build'
