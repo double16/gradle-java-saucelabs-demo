@@ -26,7 +26,7 @@ public class BookListPage extends CommonPage {
 
   public NewBookPage clickOnNewBook() {
     newBookButton.click();
-    return PageFactory.initElements(driver, NewBookPage.class);
+    return at(NewBookPage.class);
   }
 
   public int getDisplayedBookCount() {

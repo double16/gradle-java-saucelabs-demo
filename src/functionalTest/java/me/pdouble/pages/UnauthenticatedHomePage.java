@@ -19,6 +19,6 @@ public class UnauthenticatedHomePage extends CommonPage {
 
   public SignupPage clickOnSignup() {
     signupButton.click();
-    return PageFactory.initElements(driver, SignupPage.class);
+    return at(SignupPage.class);
   }
 }

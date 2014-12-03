@@ -20,9 +20,8 @@ public class NewBookTest extends AbstractBookFunctionalTest {
   @Test
   public void newBookTest() {
     newUser();
-    driver.get(baseUrl+BookListPage.url);
+    BookListPage bookListPage = go(BookListPage.class);
     report("book-list");
-    BookListPage bookListPage = PageFactory.initElements(driver, BookListPage.class);
     NewBookPage newBookPage = bookListPage.clickOnNewBook();
     report("new-book");
     bookListPage = newBookPage.createBook("The Lord of the Flies", "William Golding", 256);

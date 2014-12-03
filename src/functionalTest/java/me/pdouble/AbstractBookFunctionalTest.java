@@ -45,7 +45,7 @@ public abstract class AbstractBookFunctionalTest extends AbstractFunctionalTest 
    */
   public String newUser() {
     String userName = "me"+newUserNum.nextInt(Integer.MAX_VALUE)+"@nowhere.com";
-    UnauthenticatedHomePage unauthenticatedHomePage = PageFactory.initElements(driver, UnauthenticatedHomePage.class);
+    UnauthenticatedHomePage unauthenticatedHomePage = at(UnauthenticatedHomePage.class);
     report("home-page");
     SignupPage signupPage = unauthenticatedHomePage.clickOnSignup();
     report("pre-signup");

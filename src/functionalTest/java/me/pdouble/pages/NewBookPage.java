@@ -29,6 +29,6 @@ public class NewBookPage extends CommonPage {
     this.author.sendKeys(author);
     this.pages.sendKeys(String.valueOf(pages));
     submit.click();
-    return PageFactory.initElements(driver, BookListPage.class);
+    return at(BookListPage.class);
   }
 }
