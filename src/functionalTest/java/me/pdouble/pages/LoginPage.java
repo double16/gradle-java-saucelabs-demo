@@ -29,6 +29,6 @@ public class LoginPage {
 
   public SignupPage clickOnSignup() {
     signupButton.click();
-    return at(SignupPage.class);
+    return PageFactory.initElements(driver, SignupPage.class);
   }
 }

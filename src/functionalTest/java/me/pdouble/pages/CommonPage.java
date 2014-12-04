@@ -2,6 +2,7 @@ package me.pdouble.pages;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -15,5 +16,9 @@ public class CommonPage {
   void waitForBody() {
     WebDriverWait waitVar = new WebDriverWait(driver, 10);
     waitVar.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("body")));
+  }
+
+  public <T> T at(Class<T> page) {
+    return PageFactory.initElements(driver, page);
   }
 }
