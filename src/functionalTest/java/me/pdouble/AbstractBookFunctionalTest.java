@@ -1,37 +1,17 @@
 package me.pdouble;
 
+import com.github.double16.AbstractFunctionalTest;
 import me.pdouble.pages.SignupPage;
 import me.pdouble.pages.UnauthenticatedHomePage;
-import org.apache.commons.io.FileUtils;
-import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
-import org.junit.rules.TestName;
-import org.junit.runners.Parameterized.Parameters;
-import org.openqa.selenium.*;
-import org.openqa.selenium.phantomjs.PhantomJSDriver;
-import org.openqa.selenium.remote.CapabilityType;
-import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.By;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import com.github.double16.AbstractFunctionalTest;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.StringReader;
-import java.net.URL;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.*;
+import java.util.Random;
 
 public abstract class AbstractBookFunctionalTest extends AbstractFunctionalTest {
   private static Random newUserNum = new Random();
-
-  AbstractBookFunctionalTest(WebDriver driver) {
-    super(driver);
-  }
 
   @Before
   public void setUp() throws Exception {

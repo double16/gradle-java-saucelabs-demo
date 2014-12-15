@@ -82,7 +82,7 @@ dependencies {
 
     providedCompile group: 'org.apache.geronimo.specs', name: 'geronimo-servlet_3.0_spec', version:'1.0'
 
-    functionalTestCompile 'com.github.double16:gradle-java-saucelabs-plugin:0.1-SNAPSHOT'
+    functionalTestCompile 'com.github.double16:gradle-java-saucelabs-plugin:0.2-SNAPSHOT'
 }
 
 sauceLabs {
@@ -103,6 +103,9 @@ browsers {
     delegate."internet explorer_Windows 7_11"
     delegate."internet explorer_Windows 7_10"
     delegate."internet explorer_vista_9"
+    delegate."internet explorer_Windows 7_10" {
+        capabilities url: "http://localhost:44444/wd/hub", baseHostname: "10.0.2.2"
+    }
     /*
     nexus4 {
         capabilities browserName: "android", platform: "Linux", version: "4.4", deviceName: "LG Nexus 4"
