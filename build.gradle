@@ -11,7 +11,7 @@ buildscript {
         classpath 'org.gebish:geb-gradle:0.10.0' // for the sauceLabs configuration
         classpath 'com.saucelabs:saucerest:1.0.22'
         classpath 'com.saucelabs:sauce_java_common:2.1.10'
-        classpath 'com.github.double16:gradle-java-saucelabs-plugin:0.1-SNAPSHOT'
+        classpath 'com.github.double16:gradle-java-saucelabs-plugin:0.2-SNAPSHOT'
         classpath "org.akhikhl.gretty:gretty:1.1.7" // for the container
     }
 }
@@ -114,6 +114,18 @@ browsers {
     /* iOS doesn't work with sauce connect and internal names
     iphone {
         capabilities browserName: 'iPhone',            platform: 'OS X 10.9',   version: '7.1', 'device-orientation': 'portrait'
+    }
+    */
+    /* Local ios-driver.github.io
+    iphone {
+        capabilities url: "http://localhost:4444/wd/hub", baseHostname: "localhost",
+                simulator: 'true', instruments: 'true', timeHack: 'false', language: 'en', locale: 'en_US', device: 'iphone', CFBundleName: 'Safari',
+                acceptSslCerts: 'true',
+                CFBundleVersion:'9537.53' //7.1
+    }
+    ipad {
+        capabilities url: "http://localhost:4444/wd/hub", baseHostname: "localhost",
+                simulator: 'true', instruments: 'false', timeHack: 'false', language: 'en', locale: 'en_US', device: 'ipad', CFBundleName: 'Safari'
     }
     */
 }
