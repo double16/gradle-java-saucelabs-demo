@@ -3,7 +3,6 @@ package me.pdouble.pages;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
-import org.openqa.selenium.support.PageFactory;
 
 public class UnauthenticatedHomePage extends CommonPage {
   @FindBy(xpath = "//a[contains(text(), 'Sign up')]")
@@ -11,10 +10,7 @@ public class UnauthenticatedHomePage extends CommonPage {
 
   public UnauthenticatedHomePage(WebDriver driver) {
     super(driver);
-    waitForBody();
-    if (!driver.getTitle().contains("Welcome")) {
-      throw new IllegalStateException("Not the unauthenticated home page");
-    }
+    waitForTitle("Welcome");
   }
 
   public SignupPage clickOnSignup() {

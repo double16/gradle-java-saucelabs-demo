@@ -8,7 +8,7 @@ import org.openqa.selenium.support.PageFactory;
 /**
  * IDEA does not like "SigninPage", not sure why.
  */
-public class LoginPage {
+public class LoginPage extends CommonPage {
   private WebDriver driver;
 
   @FindBy(name = "j_username")
@@ -21,10 +21,8 @@ public class LoginPage {
   WebElement signupButton;
 
   public LoginPage(WebDriver driver) {
-    this.driver = driver;
-    if (!driver.getTitle().equals("Sign In")) {
-      throw new IllegalStateException("Not the sign in page");
-    }
+    super(driver);
+    waitForTitle("Sign In");
   }
 
   public SignupPage clickOnSignup() {

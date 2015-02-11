@@ -3,7 +3,6 @@ package me.pdouble.pages;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
-import org.openqa.selenium.support.PageFactory;
 
 public class NewBookPage extends CommonPage {
 
@@ -18,10 +17,7 @@ public class NewBookPage extends CommonPage {
 
   public NewBookPage(WebDriver driver) {
     super(driver);
-    waitForBody();
-    if (!driver.getTitle().equals("Create Book")) {
-      throw new IllegalStateException("Not the new book page");
-    }
+    waitForTitle("Create Book");
   }
 
   public BookListPage createBook(String title, String author, int pages) {

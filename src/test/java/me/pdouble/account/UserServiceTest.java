@@ -1,7 +1,6 @@
 package me.pdouble.account;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.Collection;

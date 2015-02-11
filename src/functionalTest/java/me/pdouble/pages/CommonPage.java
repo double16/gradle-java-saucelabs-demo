@@ -13,9 +13,16 @@ public class CommonPage {
     this.driver = driver;
   }
 
+  WebDriverWait slow() {
+    return new WebDriverWait(driver, 10);
+  }
+
   void waitForBody() {
-    WebDriverWait waitVar = new WebDriverWait(driver, 10);
-    waitVar.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("body")));
+    slow().until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("body")));
+  }
+
+  void waitForTitle(String title) {
+    slow().until(ExpectedConditions.titleContains(title));
   }
 
   public <T> T at(Class<T> page) {

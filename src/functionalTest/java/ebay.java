@@ -4,7 +4,6 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.uiautomation.ios.IOSCapabilities;
 */
-import java.net.URL;
 
 public class ebay {
     public static void main(String[] args) throws Exception {
