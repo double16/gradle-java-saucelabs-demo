@@ -131,6 +131,17 @@ browsers {
           platformVersion: "8.1",
           platformName: "iOS"
     }
+    ipadGrid {
+        capabilities url: "http://seleniumgrid:4444/wd/hub", baseHostname: "localhost",
+        // the following must match the appium grid advertised capabilities
+        browserName: "Safari",
+        version: "8.1",
+        platform: "MAC",
+        // the following are appium specific to select the correct simulator, they won't exist in the appium node config
+        deviceName: "iPad Simulator",
+        platformVersion: "8.1",
+        platformName: "iOS"
+    }
 }
 
 defaultTasks 'clean', 'build'
