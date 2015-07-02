@@ -8,10 +8,12 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'org.gebish:geb-gradle:0.10.0' // for the sauceLabs configuration
-        classpath 'com.saucelabs:saucerest:1.0.22'
+        classpath('org.gebish:geb-gradle:0.10.0') { // for the sauceLabs configuration
+            exclude module: 'groovy-all'
+        }
+        classpath 'com.saucelabs:saucerest:1.0.25'
         classpath 'com.saucelabs:sauce_java_common:2.1.10'
-        classpath 'com.github.double16:gradle-java-saucelabs-plugin:0.2-SNAPSHOT'
+        classpath 'com.github.double16:gradle-java-saucelabs-plugin:0.3-SNAPSHOT'
         classpath "org.akhikhl.gretty:gretty:1.1.7" // for the container
     }
 }
@@ -25,7 +27,7 @@ apply plugin: 'project-report'
 apply plugin: 'com.github.double16.java-saucelabs'
 
 group = 'me.pdouble'
-version = '0.1-SNAPSHOT'
+version = '0.2-SNAPSHOT'
 
 description = """Demonstration of functional tests using Sauce Labs on a simple Java stack using Gradle to build."""
 
@@ -82,7 +84,7 @@ dependencies {
 
     providedCompile group: 'org.apache.geronimo.specs', name: 'geronimo-servlet_3.0_spec', version:'1.0'
 
-    functionalTestCompile 'com.github.double16:gradle-java-saucelabs-plugin:0.2-SNAPSHOT'
+    functionalTestCompile 'com.github.double16:gradle-java-saucelabs-plugin:0.3-SNAPSHOT'
 }
 
 sauceLabs {
@@ -104,7 +106,10 @@ browsers {
     delegate."internet explorer_Windows 7_10"
     delegate."internet explorer_vista_9"
     delegate."internet explorer_Windows 7_10" {
-        capabilities url: "http://localhost:44444/wd/hub", baseHostname: "10.0.2.2"
+        capabilities url: "http://192.168.59.103:49153/wd/hub", baseHostname: "10.0.2.2"
+    }
+    chrome_LINUX {
+        capabilities url: "http://192.168.59.103:49153/wd/hub", baseHostname: "10.0.2.2"
     }
     /*
     nexus4 {

@@ -13,9 +13,14 @@ import java.util.Random;
 public abstract class AbstractBookFunctionalTest extends AbstractFunctionalTest {
   private static Random newUserNum = new Random();
 
+  @Override
+  public String getContextRoot() {
+    return "gradle-java-saucelabs-demo/";
+  }
+
   @Before
   public void setUp() throws Exception {
-    baseUrl = "http://localhost:8080/gradle-java-saucelabs-demo/"; // FIXME: set this from build
+    baseUrl = "http://localhost:8080/"; // FIXME: set this from build
     super.setUp();
   }
 
