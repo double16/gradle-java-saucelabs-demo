@@ -1,0 +1,4 @@
+dependencies:
+  pre:
+    - git clone git@github.com:double16/gradle-java-saucelabs-plugin.git && cd gradle-java-saucelabs-plugin && ./gradlew install
+
